@@ -9,7 +9,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
         cursorColor: Colors.white,
         style: TextStyle(color: Colors.white.withOpacity(0.9)),
         decoration: InputDecoration(
-          prefix: Icon(
+          prefixIcon: Icon(
             icon,
             color: Colors.white60,
           ),
@@ -25,7 +25,6 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
         ),
         keyboardType: isPasswordType
           ? TextInputType.visiblePassword : TextInputType.emailAddress,
-
   );
 }
 
