@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
+String email = '';
+String password = '';
+
+final _formKey = GlobalKey<FormState>();
+
+
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller) {
+    TextEditingController controller, {required Null Function(dynamic val) onChanged}) {
       return TextField(controller: controller,
         obscureText: isPasswordType,
         enableSuggestions: !isPasswordType,
@@ -36,7 +42,11 @@ Container signInSignUpButton(
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(
-      onPressed: () {
+      onPressed: () async{
+        if(_formKey.currentState!.validate()) {
+          print(email);
+          print(password);
+        }
         onTap();
       },
       child: Text(
