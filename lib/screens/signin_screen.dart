@@ -49,7 +49,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 30,
                 ),
                 reusableTextField("Enter UserName", Icons.person_outline,
-                    false, _emailTextController, onChanged: (val){
+                    false, _emailTextController,
+                    _emailTextController.text.isEmpty ? 'Enter name': null,
+                    onChanged: (val){
                   setState(() => email = val
 
                   );
@@ -57,7 +59,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 20,
                 ),
                 reusableTextField("Enter Password", Icons.lock_outline,
-                    true, _passwordTextController, onChanged: (val){
+                    true, _passwordTextController,
+                    _passwordTextController.text.isEmpty ? 'Enter name': null,
+                    onChanged: (val){
                       setState(() => password = val
                       );
 

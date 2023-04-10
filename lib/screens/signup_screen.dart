@@ -69,8 +69,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           height: 20,
           ),
             reusableTextField("First Name", Icons.person,
-                false, _firstNameTextController, onChanged: (val) {
-              validator: (val) => val.isEmpty ? 'Enter name' : null;
+                false, _firstNameTextController,
+                _firstNameTextController.text.isEmpty ? 'Enter name' : null,
+                    onChanged: (val) {
+              //validator: (val) => val.isEmpty ? 'Enter name' : null;
                   setState(() => firstName = val);
 
                 }),
@@ -78,8 +80,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 20,
             ),
             reusableTextField("Last Name", Icons.person, false,
-                _lastNameTextController, onChanged: (val) {
-                  validator: (val) => val.isEmpty ? 'Enter name' : null;
+                _lastNameTextController,
+                _lastNameTextController.text.isEmpty ? 'Enter name': null,
+                onChanged: (val) {
+                 // validator: (val) => val.isEmpty ? 'Enter name' : null;
                   setState(() => lastName = val);
 
                 }),
@@ -87,7 +91,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 20,
             ),
             reusableTextField("College", Icons.school, false,
-                _schoolTextController, onChanged: (val) {
+                _schoolTextController,
+                _schoolTextController.text.isEmpty ? 'Enter College': null,
+                onChanged: (val) {
                   setState(() => college = val);
 
                 }),
@@ -95,7 +101,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 20,
             ),
             reusableTextField("Location", Icons.location_searching, false,
-                _locationTextController, onChanged: (val) {
+                _locationTextController,
+                _locationTextController.text.isEmpty ? 'Enter location': null,
+                onChanged: (val) {
                   setState(() => location = val);
 
                 }),
@@ -103,25 +111,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 20,
             ),
             reusableTextField("Email", Icons.person_outline,
-                false, _emailTextController, onChanged: (val) {
-                  validator: (val) => val.isEmpty ? 'Enter an email' : null;
+                false, _emailTextController,
+                _emailTextController.text.isEmpty ? 'Enter email': null,
+                onChanged: (val) {
+                 // validator: (val) => val.isEmpty ? 'Enter an email' : null;
                   setState(() => email = val);
 
                 }),
             const SizedBox(height: 20,
             ),
             reusableTextField("Password", Icons.lock_outline,
-                true, _passwordTextController, onChanged: (val) {
-                  validator: (val) => val.length < 6 ? 'Enter stronger password' : null;
+                true, _passwordTextController,
+                _passwordTextController.text.isEmpty ? 'Enter password': null,
+                //_passwordTextController.length < 6 ? 'Enter stronger password': null,
+                onChanged: (val) {
+                  //validator: (val) => val.length < 6 ? 'Enter stronger password' : null;
                   setState(() => password = val);
 
                 }),
             const SizedBox(height: 20,
             ),
             reusableTextField("Confirm Password", Icons.lock_outline,
-                true, _confirmPasswordTextController, onChanged: (val) {
-                  validator: (val) => val.length != _passwordTextController ?
-                  'password do not match' : null;
+                true, _confirmPasswordTextController,
+                _confirmPasswordTextController.text.isEmpty ? 'Enter password':
+                null,
+                onChanged: (val) {
+                 // validator: (val) => val.length != _passwordTextController ?
+                  //'password do not match' : null;
                   setState(() => password = val);
                 }
             ),
@@ -164,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             );
           },
 
-          child: const Text(" Go Back",
+          child: const Text(" Back",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         )

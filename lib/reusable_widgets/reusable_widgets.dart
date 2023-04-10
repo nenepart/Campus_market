@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 String email = '';
@@ -7,7 +8,9 @@ final _formKey = GlobalKey<FormState>();
 
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller, {required Null Function(dynamic val) onChanged}) {
+    TextEditingController controller, String? errorText,
+    {required Null Function(dynamic val) onChanged})
+    {
       return TextField(controller: controller,
         obscureText: isPasswordType,
         enableSuggestions: !isPasswordType,
@@ -15,6 +18,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
         cursorColor: Colors.white,
         style: TextStyle(color: Colors.white.withOpacity(0.9)),
         decoration: InputDecoration(
+          errorText: errorText,
           prefixIcon: Icon(
             icon,
             color: Colors.white60,
