@@ -1,3 +1,4 @@
+import 'package:campus_market/models/user_model.dart';
 import 'package:campus_market/reusable_widgets/reusable_widgets.dart';
 import 'package:campus_market/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String email = '';
   String password = '';
+  String error = '';
   String firstName = '';
   String lastName = '';
   String location = '';
@@ -37,6 +39,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameTextController = TextEditingController();
   final TextEditingController _schoolTextController = TextEditingController();
   final TextEditingController _locationTextController = TextEditingController();
+
+  UserModel? get model => null;
 
 
   @override
@@ -141,10 +145,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   setState(() => password = val);
                 }
             ),
-            signInSignUpButton(context, false, () {
+            signInSignUpButton(context, false, () async {
+              if(_formKey.currentState!.validate()){
+                dynamic result = await _auth.signUpWithEmail(email, password, model!,);
+                if (result == null)
+                  {
+                    setState(() => error = 'Please enter valid email.');
+                  }
+               }
+            }
+
+
               //add verification after shit runs
               //firebase auth instance.
               //come check later
+    /*
               FirebaseAuth.instance.createUserWithEmailAndPassword(email:
               _emailTextController.text, password:
               _passwordTextController.text).then((value) {
@@ -155,10 +170,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }).onError((error, stackTrace) {
                 print("Error ${error.toString()}");
               });
+              */
             }),
+
+
             goBackOption()
 
             ],
+
                 ),
           ),
         ),

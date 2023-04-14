@@ -15,14 +15,19 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final UserRepo _auth = UserRepo();
+  final _formKey = GlobalKey<FormState>();
+
 
   String email = '';
   String password = '';
+  String error = '';
 
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
 
   get onChanged => null;
+
+  get model => null;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +48,8 @@ class _SignInScreenState extends State<SignInScreen> {
           child: Padding(padding: EdgeInsets.fromLTRB(
               20, MediaQuery.of(context).size.height* 0.2, 20, 30),
             child: Form(
-            child: Column(
+              key: _formKey,
+              child: Column(
               children: [
                 //made all Sized box constructors const's
                 const SizedBox(height: 30,
@@ -68,7 +74,16 @@ class _SignInScreenState extends State<SignInScreen> {
                           }),
                 const SizedBox(height: 20,
                 ),
-                signInSignUpButton(context, true, () {
+                signInSignUpButton(context, true, () async {
+
+                  if(_formKey.currentState!.validate()){
+                    dynamic result = await _auth.signUpWithEmail(email, password, model);
+                    if (result == null)
+                   {
+                      setState(() => error = 'Could not sign in with credentials');
+                    }
+                  }
+                  
                   FirebaseAuth.instance.signInWithEmailAndPassword(email:
                   _emailTextController.text, password:
                   _passwordTextController.text).then((value) {
@@ -76,9 +91,15 @@ class _SignInScreenState extends State<SignInScreen> {
                         MaterialPageRoute(builder: (context) =>
                         const HomeScreen()));
                   }).onError((error, stackTrace) {
-                    print("Error ${error.toString()}");
+                    debugPrint("Error ${error.toString()}");
                   });
                 }),
+
+                const SizedBox(height: 12.0,),
+                Text(
+                  error,
+                  style: const TextStyle(color: Colors.white60, fontSize: 14.0),
+                ),
                 signUpOption(),
               ],
             ),
