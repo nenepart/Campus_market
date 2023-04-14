@@ -11,7 +11,8 @@ class UserRepo {
 
   //create user obj based on firebase
   UserModel? _userFromUser(user) {
-    return user != null ? UserModel(uid: user.uid) : null;
+    return user != null ? UserModel(firstName, lastName, college, location, email, uid: uid)
+    //UserModel(uid: user.uid, ) : null;
   }
 
 
