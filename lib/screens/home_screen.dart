@@ -1,3 +1,5 @@
+import 'package:campus_market/models/product.dart';
+import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,42 +12,63 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late UserRepo userRepo;
+  late UserRepo _userRepo;
+  late ProductsRepo _productsRepo;
+
+  final int _pageSize = 10;
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
+  List<Product> _products = [];
 
   @override
   Widget build(BuildContext context) {
-    userRepo = context.watch();
+    _userRepo = context.watch<UserRepo>();
+    _productsRepo = context.watch<ProductsRepo>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campus Market'),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        actions: <Widget>[
-          TextButton.icon(
-              onPressed: () async {
-                await userRepo.signOut();
-              },
-              icon: const Icon(Icons.person),
-              label: const Text('logout'))
-        ],
+        title: Text('My App'),
       ),
-      body: Container(
-        decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.blueGrey, Colors.red])),
-        /*child:  Center(
-          child: ElevatedButton(
-            child: const Text("Sign Out"),
-            onPressed: () {
-              FirebaseAuth.instance.signOut().then((value) {
-                print("Signed Out");
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>
-                    const SignInScreen()));
-              });
+      body: StreamBuilder<List<Product>>(
+        stream: _productsRepo.streamAllProducts(),
+        builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          _products = snapshot.data!;
+          return GridView.builder(
+            padding: EdgeInsets.all(8.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),
+            itemCount: _products.length,
+            controller: _scrollController,
+            itemBuilder: (BuildContext context, int index) {
+              final Product product = _products[index];
+              return Card(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Image.network(
+                        product.imagePaths.first,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(product.name),
+                    Text(product.ownerId),
+                    Text(product.dateCreated.toString()),
+                    Text(product.productStatus.toString()),
+                  ],
+                ),
+              );
             },
-
-          ),
-        ),*/
+          );
+        },
       ),
     );
   }

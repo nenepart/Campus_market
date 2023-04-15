@@ -2,10 +2,13 @@ import 'dart:developer';
 
 import 'package:campus_market/models/user_model.dart';
 import 'package:campus_market/repositories/user_repo.dart';
-import 'package:campus_market/screens/home_screen.dart';
+import 'package:campus_market/screens/bottom_navigator_screen.dart';
 import 'package:campus_market/screens/signin_screen.dart';
 import 'package:campus_market/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../repositories/products_repo.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({Key? key, required this.userRepo}) : super(key: key);
@@ -50,7 +53,7 @@ class _WrapperState extends State<Wrapper> {
             });
           }
         } else {
-          return const HomeScreen();
+          return Provider(create: (context) => ProductsRepo(), child: BottomNavigationScreen());
         }
       },
     );
