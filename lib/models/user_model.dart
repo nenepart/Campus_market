@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
  final String location;
  final String email;
 
- UserModel(this.uid, {
+ UserModel( {
   required this.firstName,
   required this.lastName,
   required this.college,
@@ -23,8 +23,8 @@ import 'package:flutter/material.dart';
  factory UserModel.fromDocument(DocumentSnapshot doc){
   return UserModel(
       uid: doc.data()['uid'],
-      firstName: doc.data()['first name'],
-      lastName: doc.data()['last name'],
+      firstName: doc.data()['firstName'],
+      lastName: doc.data()['lastName'],
       college: doc.data()['college'],
       location: doc.data()['location'],
       email: doc.data()['email']
