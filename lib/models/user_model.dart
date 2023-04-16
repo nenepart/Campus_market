@@ -1,34 +1,31 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
- class UserModel {
+part 'user_model.g.dart';
 
-  final String uid;
- final String firstName;
- final String lastName;
- final String college;
- final String location;
- final String email;
+@JsonSerializable()
+class UserModel {
+  @JsonKey(ignore: true)
+  String? uid;
+  final String firstName;
+  final String lastName;
+  final String college;
+  final String location;
+  final String email;
 
- UserModel( {
-  required this.firstName,
-  required this.lastName,
-  required this.college,
-  required this.location,
-  required this.email,
-  required this.uid,
- });
+  UserModel({
+    this.uid,
+    required this.firstName,
+    required this.lastName,
+    required this.college,
+    required this.location,
+    required this.email,
+  });
 
- factory UserModel.fromDocument(DocumentSnapshot doc){
-  return UserModel(
-      uid: doc.data()['uid'],
-      firstName: doc.data()['firstName'],
-      lastName: doc.data()['lastName'],
-      college: doc.data()['college'],
-      location: doc.data()['location'],
-      email: doc.data()['email']
-  );
- }
+  factory UserModel.fromDocument(Map<String, dynamic> data, String uid) {
+    return _$UserModelFromJson(data)..uid = uid;
+  }
 
+  toJson() {
+    return _$UserModelToJson(this);
+  }
 }
