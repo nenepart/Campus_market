@@ -1,4 +1,5 @@
 import 'package:campus_market/firebase_options.dart';
+import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:campus_market/screens/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,8 +23,18 @@ class MyApp extends StatelessWidget {
     return Provider<UserRepo>.value(
         value: _userRepo,
         child: MaterialApp(
-          home: Wrapper(
-            userRepo: _userRepo,
+          home: MultiProvider(
+            providers: [
+              Provider<ProductsRepo>(
+                create: (context) => ProductsRepo(),
+              ),
+              Provider(
+                create: (context) => ProductsRepo(),
+              )
+            ],
+            child: Wrapper(
+              userRepo: _userRepo,
+            ),
           ),
         ));
   }

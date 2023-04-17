@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:campus_market/repositories/database.dart';
 import 'package:campus_market/repositories/storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/product.dart';
 
@@ -24,18 +25,23 @@ class ProductsRepo {
     return snapshot != null ? Product.fromJson(snapshot.data()!, snapshot.id) : null;
   }
 
-  Future<String?> addProduct(Product product, List<File> media) async {
+  Future<String?> addProduct(Product product, List<XFile> media) async {
+    String? productId = await _databaseService.createDocument('products', product.toJson(), docId: product.id);
+
+    if (productId == null) {
+      return null;
+    }
+
     // Upload media files to Firebase Storage
-    final List<String?> mediaUrls = await Future.wait(media.map((File file) async {
+    final List<String?> mediaUrls = await Future.wait(media.map((XFile file) async {
       final String fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
-      final String path = 'products/${product.id}/$fileName';
-      final File renamedFile = await renameFileExtension(file, '.png');
-      return _firebaseStorageService.uploadFile(path, renamedFile);
+      final String path = 'products/${product.ownerId}/$productId-$fileName';
+      return _firebaseStorageService.uploadFile(path, File(file.path));
     }));
 
     // Add product to Firestore with media URLs
     product.imagePaths = mediaUrls.cast<String>();
-    return _databaseService.createDocument('products', product.toJson(), docId: product.id);
+    await _databaseService.updateDocument('products/$productId', product.toJson());
   }
 
   Future<File> renameFileExtension(File file, String newExtension) async {

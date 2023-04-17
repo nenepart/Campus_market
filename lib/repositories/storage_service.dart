@@ -8,7 +8,7 @@ class FirebaseStorageService {
   // Upload a file to Firebase Storage and return its URL
   Future<String?> uploadFile(String path, File file) async {
     final Reference storageReference = _firebaseStorage.ref().child(path);
-    final UploadTask uploadTask = storageReference.putFile(file);
+    final UploadTask uploadTask = storageReference.putData(await file.readAsBytes());
     final TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => null);
     if (uploadTask.snapshot.state == TaskState.success) {
       final String downloadUrl = await storageReference.getDownloadURL();

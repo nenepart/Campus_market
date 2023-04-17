@@ -1,6 +1,7 @@
 import 'package:campus_market/models/product.dart';
 import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
+import 'package:campus_market/screens/add_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,8 +27,19 @@ class _HomeScreenState extends State<HomeScreen> {
     _productsRepo = context.watch<ProductsRepo>();
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ProductForm(
+                        productsRepo: _productsRepo,
+                      )));
+        },
+      ),
       appBar: AppBar(
-        title: Text('My App'),
+        title: const Text('Campus Market'),
       ),
       body: StreamBuilder<List<Product>>(
         stream: _productsRepo.streamAllProducts(),
@@ -36,14 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return Text('Error: ${snapshot.error}');
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
           _products = snapshot.data!;
           return GridView.builder(
-            padding: EdgeInsets.all(8.0),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),
+            padding: const EdgeInsets.all(8.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 4),
             itemCount: _products.length,
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
@@ -51,18 +63,48 @@ class _HomeScreenState extends State<HomeScreen> {
               return Card(
                 child: Column(
                   children: [
-                    Expanded(
-                      child: Image.network(
-                        product.imagePaths.first,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      ),
+                    SizedBox(
+                      height: 130,
+                      child: product.imagePaths.isNotEmpty
+                          ? Expanded(
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    product.imagePaths.first,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    errorBuilder: (context, _, __) {
+                                      return Icon(
+                                        Icons.close,
+                                        size: 70,
+                                      );
+                                    },
+                                  ),
+                                  if (product.productStatus != ProductSaleStatus.sold)
+                                    const Expanded(
+                                      child: Text(
+                                        "SOLD",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                          : Center(child: const Text("No Image")),
                     ),
                     SizedBox(height: 8.0),
-                    Text(product.name),
-                    Text(product.ownerId),
-                    Text(product.dateCreated.toString()),
-                    Text(product.productStatus.toString()),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          product.name,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
                   ],
                 ),
               );

@@ -1,13 +1,17 @@
+import 'package:campus_market/repositories/products_repo.dart';
+import 'package:campus_market/repositories/user_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
 import '../reusable_widgets/image_selector.dart';
 
 class ProductForm extends StatefulWidget {
   final Product? product;
+  final ProductsRepo productsRepo;
 
-  const ProductForm({Key? key, this.product}) : super(key: key);
+  const ProductForm({Key? key, this.product, required this.productsRepo}) : super(key: key);
 
   @override
   _ProductFormState createState() => _ProductFormState();
@@ -15,82 +19,114 @@ class ProductForm extends StatefulWidget {
 
 class _ProductFormState extends State<ProductForm> {
   late TextEditingController _nameController;
-  late TextEditingController _ownerIdController;
-  late TextEditingController _productStatusController;
-  late List<XFile> images = [];
+  late TextEditingController _productPriceController;
+  late TextEditingController _descriptionController;
+  List<XFile> images = [];
+  ProductType productType = ProductType.electronics;
+
+  late UserRepo _userRepo;
 
   @override
   void initState() {
     super.initState();
 
     _nameController = TextEditingController(text: widget.product?.name ?? "");
-    _ownerIdController = TextEditingController(text: widget.product?.ownerId ?? "");
-    _productStatusController = TextEditingController(text: widget.product?.productStatus.toString() ?? "");
+    _descriptionController = TextEditingController(text: widget.product?.ownerId ?? "");
+    _productPriceController = TextEditingController(text: widget.product?.price.toString() ?? "0.00");
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _ownerIdController.dispose();
-    _productStatusController.dispose();
+    _descriptionController.dispose();
+    _productPriceController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _userRepo = context.watch();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product == null ? "Add Product" : "Edit Product"),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ImageCarousel(
-              onImagesSelected: (List<XFile> files) {
-                images = files;
-              },
-            ),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: "Name"),
-            ),
-            TextFormField(
-              controller: _ownerIdController,
-              decoration: InputDecoration(labelText: "Owner Id"),
-            ),
-            TextFormField(
-              controller: _productStatusController,
-              decoration: InputDecoration(labelText: "Product Status"),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                final product = Product(
-                  name: _nameController.text,
-                  ownerId: _ownerIdController.text,
-                  productStatus: ProductSaleStatus.values.firstWhere(
-                    (status) => status.toString() == _productStatusController.text,
-                    orElse: () => ProductSaleStatus.inactive,
-                  ),
-                  dateCreated: DateTime.now(),
-                  imagePaths: [],
-                );
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "What type of item are you selling??",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              DropdownMenu(
+                dropdownMenuEntries: ProductType.values.map((e) => DropdownMenuEntry(value: e, label: e.name.toString())).toList(),
+                initialSelection: productType,
+                onSelected: (value) {
+                  if (value != null) {
+                    productType = value;
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Text(
+                "Add images",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              ImageCarousel(
+                onImagesSelected: (List<XFile> files) {
+                  images = files;
+                },
+              ),
+              TextFormField(
+                controller: _nameController,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  labelText: "Item name",
+                  alignLabelWithHint: true,
+                ),
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: "Item Description"),
+              ),
+              TextFormField(
+                controller: _productPriceController,
+                decoration: const InputDecoration(labelText: "Price", prefixText: "\$"),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () async {
+                  final product = Product(
+                      ownerId: _userRepo.firestoreUserStream.value!.uid!,
+                      name: _nameController.text,
+                      productStatus: ProductSaleStatus.active,
+                      type: productType,
+                      dateCreated: DateTime.now(),
+                      imagePaths: [],
+                      description: _descriptionController.text,
+                      price: double.parse(_productPriceController.text));
 
-                if (widget.product == null) {
-                  // Add product
-                  // Call your ProductsRepository's addProduct method here
-                } else {
-                  // Update product
-                  // Call your ProductsRepository's updateProduct method here
-                }
+                  if (widget.product == null) {
+                    await widget.productsRepo.addProduct(product, images);
+                    // Add product
+                    // Call your ProductsRepository's addProduct method here
+                  } else {
+                    await widget.productsRepo.updateProduct(product);
+                  }
 
-                Navigator.pop(context);
-              },
-              child: Text("Save"),
-            ),
-          ],
+                  Navigator.pop(context);
+                },
+                child: Text("Save"),
+              ),
+            ],
+          ),
         ),
       ),
     );

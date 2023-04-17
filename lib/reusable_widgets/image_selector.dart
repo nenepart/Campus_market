@@ -35,33 +35,46 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < _images.length; i++)
-          Stack(
-            children: [
-              Image.file(
-                File(_images[i].path),
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+    return SizedBox(
+      height: 150,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: [
+          for (var i = 0; i < _images.length; i++)
+            Container(
+              height: 150,
+              margin: const EdgeInsets.all(6),
+              color: Colors.black12,
+              child: Stack(
+                children: [
+                  Image.file(
+                    File(_images[i].path),
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      onPressed: () => _removeImage(i),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ),
+                ],
               ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IconButton(
-                  onPressed: () => _removeImage(i),
-                  icon: Icon(Icons.close),
-                ),
+            ),
+          if (_images.length < 3)
+            IconButton(
+              onPressed: _selectImage,
+              icon: const Icon(
+                Icons.add,
+                size: 70,
               ),
-            ],
-          ),
-        if (_images.length < 3)
-          IconButton(
-            onPressed: _selectImage,
-            icon: const Icon(Icons.add),
-          ),
-      ],
+            ),
+        ],
+      ),
     );
   }
 }

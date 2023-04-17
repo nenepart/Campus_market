@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'add_product_screen.dart';
 import 'home_screen.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
@@ -11,14 +10,15 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _children = [
-    HomeScreen(),
-    ProductForm(),
-    // ChatsScreen(),
-  ];
+  late List<Widget> _children;
 
   @override
   Widget build(BuildContext context) {
+    _children = [
+      HomeScreen(),
+      // ChatsScreen(),
+    ];
+
     return Scaffold(
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -28,14 +28,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Add Product',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),

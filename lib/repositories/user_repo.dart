@@ -5,7 +5,15 @@ import 'package:flutter/cupertino.dart';
 import '../models/user_model.dart';
 
 class UserRepo {
-  UserRepo() : _dbService = DatabaseService();
+  UserRepo() : _dbService = DatabaseService() {
+    _auth.authStateChanges().listen((event) async {
+      if (event == null) {
+        signOut();
+      } else {
+        firestoreUserStream.value = await getFirestoreUser(event);
+      }
+    });
+  }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseService _dbService;
