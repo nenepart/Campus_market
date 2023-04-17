@@ -2,6 +2,7 @@ import 'package:campus_market/models/product.dart';
 import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:campus_market/screens/add_product_screen.dart';
+import 'package:campus_market/screens/view_product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,12 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ProductForm(
-                        productsRepo: _productsRepo,
-                      )));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductForm()));
         },
       ),
       appBar: AppBar(
@@ -60,14 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
               final Product product = _products[index];
-              return Card(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 130,
-                      child: product.imagePaths.isNotEmpty
-                          ? Expanded(
-                              child: Stack(
+              return InkWell(
+                onTap: () {
+                  onProductTap(product);
+                },
+                child: Card(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 130,
+                        child: product.imagePaths.isNotEmpty
+                            ? Stack(
                                 children: [
                                   Image.network(
                                     product.imagePaths.first,
@@ -80,32 +79,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     },
                                   ),
-                                  if (product.productStatus != ProductSaleStatus.sold)
-                                    const Expanded(
-                                      child: Text(
-                                        "SOLD",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
+                                  if (product.productStatus == ProductSaleStatus.sold)
+                                    Text(
+                                      "SOLD",
+                                      style: TextStyle(color: Colors.red),
                                     ),
                                 ],
-                              ),
-                            )
-                          : Center(child: const Text("No Image")),
-                    ),
-                    SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          product.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  ],
+                              )
+                            : Center(child: const Text("No Image")),
+                      ),
+                      SizedBox(height: 8.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            product.name,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -113,5 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  void onProductTap(Product product) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewProductPage(product: product)));
   }
 }

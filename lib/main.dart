@@ -20,22 +20,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<UserRepo>.value(
-        value: _userRepo,
-        child: MaterialApp(
-          home: MultiProvider(
-            providers: [
-              Provider<ProductsRepo>(
-                create: (context) => ProductsRepo(),
-              ),
-              Provider(
-                create: (context) => ProductsRepo(),
-              )
-            ],
-            child: Wrapper(
-              userRepo: _userRepo,
-            ),
-          ),
-        ));
+    return MultiProvider(
+      providers: [
+        Provider<ProductsRepo>(
+          create: (context) => ProductsRepo(),
+        ),
+        Provider<UserRepo>.value(
+          value: _userRepo,
+        )
+      ],
+      child: MaterialApp(
+        home: Wrapper(
+          userRepo: _userRepo,
+        ),
+      ),
+    );
   }
 }

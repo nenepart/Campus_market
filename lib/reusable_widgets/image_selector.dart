@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageCarousel extends StatefulWidget {
-  final void Function(List<XFile>) onImagesSelected;
+  final void Function(List<XFile>)? onImagesSelected;
+  final List<String>? imagePaths;
 
-  const ImageCarousel({Key? key, required this.onImagesSelected}) : super(key: key);
+  const ImageCarousel({Key? key, required this.onImagesSelected, this.imagePaths}) : super(key: key);
 
   @override
   _ImageCarouselState createState() => _ImageCarouselState();
@@ -22,7 +23,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
       setState(() {
         _images.add(image);
       });
-      widget.onImagesSelected(_images);
+      widget.onImagesSelected!(_images);
     }
   }
 
@@ -30,7 +31,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
     setState(() {
       _images.removeAt(index);
     });
-    widget.onImagesSelected(_images);
+    widget.onImagesSelected!(_images);
   }
 
   @override
@@ -48,6 +49,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
               color: Colors.black12,
               child: Stack(
                 children: [
+                  if ((widget.imagePaths?.isNotEmpty ?? false) && widget.imagePaths!.length > i) Image.network(widget.imagePaths![i]),
                   Image.file(
                     File(_images[i].path),
                     width: 150,
@@ -65,7 +67,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                 ],
               ),
             ),
-          if (_images.length < 3)
+          if (_images.length < 3 && widget.onImagesSelected != null)
             IconButton(
               onPressed: _selectImage,
               icon: const Icon(

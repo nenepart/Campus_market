@@ -9,9 +9,8 @@ import '../reusable_widgets/image_selector.dart';
 
 class ProductForm extends StatefulWidget {
   final Product? product;
-  final ProductsRepo productsRepo;
 
-  const ProductForm({Key? key, this.product, required this.productsRepo}) : super(key: key);
+  const ProductForm({Key? key, this.product}) : super(key: key);
 
   @override
   _ProductFormState createState() => _ProductFormState();
@@ -23,6 +22,7 @@ class _ProductFormState extends State<ProductForm> {
   late TextEditingController _descriptionController;
   List<XFile> images = [];
   ProductType productType = ProductType.electronics;
+  late ProductsRepo productsRepo;
 
   late UserRepo _userRepo;
 
@@ -31,7 +31,7 @@ class _ProductFormState extends State<ProductForm> {
     super.initState();
 
     _nameController = TextEditingController(text: widget.product?.name ?? "");
-    _descriptionController = TextEditingController(text: widget.product?.ownerId ?? "");
+    _descriptionController = TextEditingController(text: widget.product?.description ?? "");
     _productPriceController = TextEditingController(text: widget.product?.price.toString() ?? "0.00");
   }
 
@@ -46,7 +46,7 @@ class _ProductFormState extends State<ProductForm> {
   @override
   Widget build(BuildContext context) {
     _userRepo = context.watch();
-
+    productsRepo = context.watch<ProductsRepo>();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product == null ? "Add Product" : "Edit Product"),
@@ -79,6 +79,7 @@ class _ProductFormState extends State<ProductForm> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               ImageCarousel(
+                imagePaths: widget.product?.imagePaths,
                 onImagesSelected: (List<XFile> files) {
                   images = files;
                 },
@@ -114,11 +115,11 @@ class _ProductFormState extends State<ProductForm> {
                       price: double.parse(_productPriceController.text));
 
                   if (widget.product == null) {
-                    await widget.productsRepo.addProduct(product, images);
+                    await productsRepo.addProduct(product, images);
                     // Add product
                     // Call your ProductsRepository's addProduct method here
                   } else {
-                    await widget.productsRepo.updateProduct(product);
+                    await productsRepo.updateProduct(product);
                   }
 
                   Navigator.pop(context);
