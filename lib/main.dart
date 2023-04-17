@@ -1,4 +1,5 @@
 import 'package:campus_market/firebase_options.dart';
+import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:campus_market/screens/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,12 +20,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<UserRepo>.value(
-        value: _userRepo,
-        child: MaterialApp(
-          home: Wrapper(
-            userRepo: _userRepo,
-          ),
-        ));
+    return MultiProvider(
+      providers: [
+        Provider<ProductsRepo>(
+          create: (context) => ProductsRepo(),
+        ),
+        Provider<UserRepo>.value(
+          value: _userRepo,
+        )
+      ],
+      child: MaterialApp(
+        home: Wrapper(
+          userRepo: _userRepo,
+        ),
+      ),
+    );
   }
 }
