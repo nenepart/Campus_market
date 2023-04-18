@@ -19,7 +19,8 @@ class Product {
   double price;
 
   Product(
-      {required this.name,
+      {this.id,
+      required this.name,
       required this.dateCreated,
       required this.imagePaths,
       required this.ownerId,
