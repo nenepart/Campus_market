@@ -33,6 +33,7 @@ class _ProductFormState extends State<ProductForm> {
     _nameController = TextEditingController(text: widget.product?.name ?? "");
     _descriptionController = TextEditingController(text: widget.product?.description ?? "");
     _productPriceController = TextEditingController(text: widget.product?.price.toString() ?? "0.00");
+    productType = widget.product?.type ?? ProductType.electronics;
   }
 
   @override
@@ -105,6 +106,7 @@ class _ProductFormState extends State<ProductForm> {
               ElevatedButton(
                 onPressed: () async {
                   final product = Product(
+                      id: widget.product?.id,
                       ownerId: _userRepo.firestoreUserStream.value!.uid!,
                       name: _nameController.text,
                       productStatus: ProductSaleStatus.active,
@@ -119,7 +121,9 @@ class _ProductFormState extends State<ProductForm> {
                     // Add product
                     // Call your ProductsRepository's addProduct method here
                   } else {
-                    await productsRepo.updateProduct(product);
+                    return await productsRepo.updateProduct(product, images).then((value) {
+                      Navigator.pop(context, product);
+                    });
                   }
 
                   Navigator.pop(context);

@@ -18,7 +18,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _selectImage() async {
-    final image = await _picker.pickImage(source: ImageSource.gallery);
+    final image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
       setState(() {
         _images.add(image);
@@ -29,7 +29,10 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
   Future<void> _removeImage(int index) async {
     setState(() {
-      _images.removeAt(index);
+      if (widget.imagePaths != null && widget.imagePaths!.length >= index) {
+        widget.imagePaths!.removeAt(index);
+      } else
+        _images.removeAt(index);
     });
     widget.onImagesSelected!(_images);
   }
@@ -42,20 +45,21 @@ class _ImageCarouselState extends State<ImageCarousel> {
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         children: [
-          for (var i = 0; i < _images.length; i++)
+          for (var i = 0; i < (widget.imagePaths?.length ?? _images.length); i++)
             Container(
               height: 150,
               margin: const EdgeInsets.all(6),
               color: Colors.black12,
               child: Stack(
                 children: [
-                  if ((widget.imagePaths?.isNotEmpty ?? false) && widget.imagePaths!.length > i) Image.network(widget.imagePaths![i]),
-                  Image.file(
-                    File(_images[i].path),
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  ),
+                  if ((widget.imagePaths?.isNotEmpty ?? false) && widget.imagePaths!.length >= i) Image.network(widget.imagePaths![i]),
+                  if (_images.length > i)
+                    Image.file(
+                      File(_images[i].path),
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    ),
                   Positioned(
                     top: 0,
                     right: 0,

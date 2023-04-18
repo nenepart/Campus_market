@@ -26,7 +26,7 @@ class ProductsRepo {
   }
 
   Future<String?> addProduct(Product product, List<XFile> media) async {
-    String? productId = await _databaseService.createDocument('products', product.toJson(), docId: product.id);
+    String? productId = await _databaseService.createDocument(kCollectionPath, product.toJson(), docId: product.id);
 
     if (productId == null) {
       return null;
@@ -50,14 +50,27 @@ class ProductsRepo {
   }
 
   // Update an existing product in the Firestore database
-  Future<bool> updateProduct(Product product) async {
-    final bool success = await _databaseService.updateDocument('products/${product.id}', product.toJson());
+  Future<bool> updateProduct(Product product, List<XFile>? newMedia) async {
+    print("Updating product: ${product.id}");
+    if (newMedia != null && newMedia.isNotEmpty) {
+      // Upload media files to Firebase Storage
+      final List<String> mediaUrls = await Future.wait(newMedia.map((XFile file) async {
+        final String fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
+        final String path = 'products/${product.ownerId}/${product.id}-$fileName';
+
+        return (await _firebaseStorageService.uploadFile(path, File(file.path))) ?? "";
+      }));
+
+      product.imagePaths.addAll(mediaUrls);
+    }
+
+    final bool success = await _databaseService.updateDocument('$kCollectionPath/${product.id}', product.toJson());
     return success;
   }
 
   // Delete a product from the Firestore database using its ID
   Future<bool> deleteProduct(String productId) async {
-    final bool success = await _databaseService.deleteDocument('products/$productId');
+    final bool success = await _databaseService.deleteDocument('$kCollectionPath/$productId');
     return success;
   }
 }

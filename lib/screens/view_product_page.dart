@@ -14,14 +14,20 @@ class ViewProductPage extends StatefulWidget {
 
 class _ViewProductPageState extends State<ViewProductPage> {
   late UserRepo _userRepo;
+  late Product product;
+  @override
+  void initState() {
+    product = widget.product;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Product product = widget.product;
     _userRepo = UserRepo();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product.name),
+        title: Text(product.name),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height * .95,
@@ -31,12 +37,12 @@ class _ViewProductPageState extends State<ViewProductPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: [
-              if (widget.product.imagePaths.isNotEmpty)
+              if (product.imagePaths.isNotEmpty)
                 SizedBox(
                   height: 150,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: widget.product.imagePaths.length,
+                    itemCount: product.imagePaths.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (BuildContext context, int index) {
                       return Center(child: Image.network(product.imagePaths[index]));
@@ -93,13 +99,18 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   return _userRepo.firestoreUserStream.value?.uid == product.ownerId ? child! : SizedBox.shrink();
                 },
                 child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      Product newProd = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => ProductForm(
-                                    product: widget.product,
+                                    product: product,
                                   )));
+                      print("updating ${newProd == product}");
+                      setState(() {
+                        product = newProd;
+                      });
+                      Navigator.pop(context);
                     },
                     child: const Text("EDIT PRODUCT")),
               )
