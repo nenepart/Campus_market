@@ -1,30 +1,34 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 
+part 'chat_model.g.dart';
+
 @JsonSerializable()
-class ChatModel{
-  final String text;
-  final DateTime  date;
-  final bool isSentByMe;
+class ChatModel {
+  String text;
+  String? id;
+  DateTime date;
+  String userSentId;
+  String productId;
 
   ChatModel({
+    this.id,
+    required this.userSentId,
     required this.text,
     required this.date,
-    required this.isSentByMe,
+    required this.productId,
   });
 
   //Map<String, dynamic> toJson(){
-    //return{
+  //return{
 
-    //};
+  //};
   //}
 
-  factory ChatModel.fromDocument(Map<String, dynamic> data, String? id){
+  factory ChatModel.fromDocument(Map<String, dynamic> data, String? id) {
     return _$ChatModelFromJson(data)..id = id;
   }
-  toJson(){
+
+  toJson() {
     return _$ChatModelToJson(this);
   }
-
 }
