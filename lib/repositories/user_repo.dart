@@ -3,52 +3,54 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../models/user_model.dart';
-import '../reusable_widgets/reusable_widgets.dart';
 
 class UserRepo {
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  //create user obj based on firebase
-  UserModel? _userFromUser(user) {
-    return user != null ? UserModel(
-        firstName: 'first name',
-        lastName: 'last name',
-        college: 'college',
-        location: 'location',
-        email: 'email',
-        uid: 'uid') : null;
-    //UserModel(uid: user.uid, ) : null;
+  UserRepo() : _dbService = DatabaseService() {
+    _auth.authStateChanges().listen((event) async {
+      if (event == null) {
+        signOut();
+      } else {
+        firestoreUserStream.value = await getFirestoreUser(event);
+      }
+    });
   }
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseService _dbService;
+  static const String userCollectionPath = "users";
+
+  ValueNotifier<UserModel?> firestoreUserStream = ValueNotifier(null);
 
   // auth change user stream
-  Stream<User> get user {
-    return _auth.authStateChanges()
-        .map(_userFromUser as User Function(User? event));
+  Stream<User?> get user {
+    return _auth.authStateChanges();
     //return _auth.signInWithEmailAndPassword(email: email, password: password)
   }
 
-  UserModel? getUser() {
-    User? user = _auth.currentUser;
-    return _userFromUser(user);
+  Future<UserModel?> getFirestoreUser(User user) async {
+    return _dbService.getDocument("$userCollectionPath/${user.uid}").then((value) {
+      if (value == null) {
+        throw "UserDocumentError";
+      }
+      return UserModel.fromDocument(value.data()!, value.id);
+    });
   }
 
-
-  Future signInWithEmail(String email, String password) async {
+  Future<bool> signInWithEmail(String email, String password) async {
     //use firebaseAuth to sign in
     //if successful, use the firebase auth id returned from the user credential; to pull the user data from firestore
 
-    try{
-      UserCredential result = await _auth.signInWithEmailAndPassword
-        (email: email, password: password);
-      User? user = result.user;
-      //Create a new user document in database
-      return _userFromUser(user);
-    } catch(e) {
-      debugPrint(e.toString());
-      return null;
+    UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    User? user = result.user;
+
+    if (user == null) {
+      return false;
     }
+
+    //Set user
+    firestoreUserStream.value = await getFirestoreUser(user);
+    print("User value is  ${firestoreUserStream.value} ${firestoreUserStream.hasListeners}");
+    return true;
     /*
     try{
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -71,20 +73,22 @@ class UserRepo {
   }
 
 //signup user
-  Future signUpWithEmail(String email, String password, UserModel model) async {
+  Future<bool> signUpWithEmail(String email, String password, UserModel model) async {
     //use firebaseAuth to sign in
     //if successful, use the id returned to create a new document in firestore and save the user data there
     //store the user data here also
-    try{
-      UserCredential result = await _auth.createUserWithEmailAndPassword
-        (email: email, password: password);
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
       //Create a new user document in database
-      await DatabaseServices(uid: user!.uid).updateUserData('first name', 'last name', 'college', 'location');
-      return _userFromUser(user);
-    } catch(e) {
+      await _dbService.createDocument(userCollectionPath, model.toJson(), docId: user!.uid);
+      firestoreUserStream.value = await getFirestoreUser(user);
+
+      return true;
+      firestoreUserStream.value = model;
+    } catch (e) {
       debugPrint(e.toString());
-      return null;
+      return false;
     }
 
 /*

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:campus_market/models/user_model.dart';
 import 'package:campus_market/repositories/user_repo.dart';
-import 'package:campus_market/screens/home_screen.dart';
+import 'package:campus_market/screens/bottom_navigator_screen.dart';
 import 'package:campus_market/screens/signin_screen.dart';
 import 'package:campus_market/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +18,6 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   bool showSignIn = true;
-
-  @override
-  void initState() {
-    widget.userRepo.firestoreUserStream.addListener(() {
-      log("change!!! ");
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +42,7 @@ class _WrapperState extends State<Wrapper> {
             });
           }
         } else {
-          return const HomeScreen();
+          return BottomNavigationScreen();
         }
       },
     );
