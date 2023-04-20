@@ -7,6 +7,7 @@ part of 'product.dart';
 // **************************************************************************
 
 Product _$ProductFromJson(Map<String, dynamic> json) => Product(
+      id: json['id'] as String?,
       name: json['name'] as String,
       dateCreated: DateTime.parse(json['dateCreated'] as String),
       imagePaths: (json['imagePaths'] as List<dynamic>)
@@ -18,7 +19,7 @@ Product _$ProductFromJson(Map<String, dynamic> json) => Product(
       description: json['description'] as String,
       type: $enumDecode(_$ProductTypeEnumMap, json['type']),
       price: (json['price'] as num).toDouble(),
-    )..id = json['id'] as String?;
+    );
 
 Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
       'id': instance.id,

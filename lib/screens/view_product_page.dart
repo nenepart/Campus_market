@@ -1,5 +1,6 @@
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:campus_market/screens/add_product_screen.dart';
+import 'package:campus_market/screens/chat_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/product.dart';
@@ -92,7 +93,11 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   ),
                 ],
               ),
-              OutlinedButton(onPressed: () {}, child: Text("CHAT WITH SELLER")),
+              OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(product: product)));
+                  },
+                  child: Text("CHAT WITH SELLER")),
               ValueListenableBuilder(
                 valueListenable: _userRepo.firestoreUserStream,
                 builder: (context, user, child) {
