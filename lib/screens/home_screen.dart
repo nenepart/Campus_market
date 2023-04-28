@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final int _pageSize = 10;
   final ScrollController _scrollController = ScrollController();
-  bool _isLoading = false;
   List<Product> _products = [];
 
   @override
@@ -29,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => ProductForm()));
         },
@@ -73,20 +72,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                     errorBuilder: (context, _, __) {
-                                      return Icon(
+                                      return const Icon(
                                         Icons.close,
                                         size: 70,
                                       );
                                     },
                                   ),
                                   if (product.productStatus == ProductSaleStatus.sold)
-                                    Text(
+                                    const Text(
                                       "SOLD",
                                       style: TextStyle(color: Colors.red),
                                     ),
                                 ],
                               )
-                            : Center(child: const Text("No Image")),
+                            : const Center(child: Text("No Image")),
                       ),
                       SizedBox(height: 8.0),
                       Row(
@@ -98,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                     ],

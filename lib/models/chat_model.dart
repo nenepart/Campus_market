@@ -24,7 +24,7 @@ class ChatModel {
   //};
   //}
 
-  factory ChatModel.fromDocument(Map<String, dynamic> data, String? id) {
+  factory ChatModel.fromJson(Map<String, dynamic> data, {String? id}) {
     return _$ChatModelFromJson(data)..id = id;
   }
 

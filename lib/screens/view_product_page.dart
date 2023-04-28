@@ -97,7 +97,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(product: product)));
                   },
-                  child: Text("CHAT WITH SELLER")),
+                  child: const Text("CHAT WITH SELLER")),
               ValueListenableBuilder(
                 valueListenable: _userRepo.firestoreUserStream,
                 builder: (context, user, child) {
