@@ -1,3 +1,4 @@
+import 'package:campus_market/models/product.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'chat_model.dart';
@@ -10,7 +11,6 @@ class ChatSession {
   String? id;
   String productId;
   String productOwnerId;
-  String productOwnerName;
   String senderId;
   String senderName;
   List<ChatModel> messages;
@@ -19,7 +19,6 @@ class ChatSession {
       {required this.productId,
       required this.messages,
       required this.productOwnerId,
-      required this.productOwnerName,
       required this.senderId,
       required this.senderName,
       this.id});
@@ -28,5 +27,10 @@ class ChatSession {
 
   Map<String, dynamic> toJson() => _$ChatSessionToJson(this);
   @override
-  String toString() => "ChatSession";
+  String toString() =>
+      "ChatSession{$id, productId: $productId productOwnerId: $productOwnerId senderId:$senderId senderName: $senderName }";
+
+  factory ChatSession.newSession(String buyerId, String buyerName, Product product) {
+    return ChatSession(productId: product.id!, messages: [], productOwnerId: product.ownerId, senderId: buyerId, senderName: buyerName);
+  }
 }

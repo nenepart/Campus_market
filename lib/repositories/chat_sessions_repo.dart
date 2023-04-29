@@ -4,6 +4,8 @@ import 'package:campus_market/repositories/database.dart';
 import 'package:campus_market/repositories/products_repo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/product.dart';
+
 class ChatSessionsRepo {
   static const String kCollectionPath = 'chat_sessions';
   DatabaseService db = DatabaseService();
@@ -21,6 +23,32 @@ class ChatSessionsRepo {
         .getCollectionReference(_getChatSessionCollectionPath(message.productId))
         .doc(sessionId)
         .update({"messages": FieldValue.arrayUnion(message.toJson())});
+  }
+
+  Future<Stream<ChatSession>> streamChat(Product product, String buyerId) async {
+    return db
+        .getCollectionReference(kCollectionPath)
+        .where("productId", isEqualTo: product.id!)
+        .where("senderId", isEqualTo: buyerId)
+        .limit(1)
+        .get()
+        .then((value) {
+      if (value.docs.isEmpty) {
+        //create new session
+        db
+            .createDocument(_getChatSessionCollectionPath(product.id!), ChatSession.newSession(buyerId, "Ameteku", product).toJson())
+            .then((value) {
+          if (value != null) {
+            return db
+                .getCollectionReference(kCollectionPath)
+                .doc(value)
+                .snapshots()
+                .map((event) => ChatSession.fromJson(event.data()!, id: event.id));
+          }
+        });
+      }
+      return value.docs.first.reference.snapshots().map((event) => ChatSession.fromJson(event.data()!, id: event.id));
+    });
   }
 
   String _getChatSessionCollectionPath(String productId) => '${ProductsRepo.kCollectionPath}/$productId/$kCollectionPath';
