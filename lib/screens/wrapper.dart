@@ -42,6 +42,7 @@ class _WrapperState extends State<Wrapper> {
             });
           }
         } else {
+          showSignIn = true;
           return BottomNavigationScreen();
         }
       },

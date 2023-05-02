@@ -16,6 +16,8 @@ class ChatModel {
     required this.text,
     required this.date,
     required this.productId,
+
+
   });
 
   //Map<String, dynamic> toJson(){

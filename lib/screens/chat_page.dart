@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 
 import '../models/product.dart';
 
+import 'package:grouped_list/grouped_list.dart';
+
+
 class ChatPage extends StatefulWidget {
   final Product product;
   const ChatPage({Key? key, required this.product}) : super(key: key);
@@ -19,6 +22,7 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatModel> messages = [];
 
   late UserRepo _userRepo;
+
   @override
   Widget build(BuildContext context) {
     _userRepo = context.read<UserRepo>();
@@ -53,10 +57,14 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
+
               ),
             ),
             itemBuilder: (context, ChatModel message) => Align(
                 alignment: message.userSentId == _userRepo.firestoreUserStream.value!.uid! ? Alignment.centerRight : Alignment.centerLeft,
+
+
+
                 child: Card(
                   elevation: 8,
                   child: Padding(

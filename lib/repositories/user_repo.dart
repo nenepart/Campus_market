@@ -113,6 +113,7 @@ class UserRepo {
   //sign out
   Future signOut() async {
     try {
+      firestoreUserStream.value = null;
       return await _auth.signOut();
     } catch (e) {
       debugPrint(e.toString());

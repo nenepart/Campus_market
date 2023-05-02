@@ -1,3 +1,4 @@
+import 'package:campus_market/repositories/user_repo.dart';
 import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
@@ -24,6 +25,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
+          if (index == 2){
+            UserRepo().signOut();
+            return;
+          }
           setState(() {
             _currentIndex = index;
           });
@@ -36,6 +41,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
             label: 'Chats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
           ),
         ],
       ),
