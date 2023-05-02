@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestoreInstance;
@@ -36,6 +37,7 @@ class DatabaseService {
 
   Future<bool> updateDocument(String documentPath, Map<String, dynamic> data) =>
       _firestoreInstance.doc(documentPath).update(data).then((value) => true).onError((error, stackTrace) {
+        debugPrint("Error $error $stackTrace");
         return false;
       });
 

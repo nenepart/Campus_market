@@ -1,6 +1,7 @@
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:flutter/material.dart';
 
+import 'chat_screen.dart';
 import 'home_screen.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   Widget build(BuildContext context) {
     _children = [
       HomeScreen(),
-      // ChatsScreen(),
+      ChatScreen(),
     ];
 
     return Scaffold(

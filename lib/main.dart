@@ -1,4 +1,5 @@
 import 'package:campus_market/firebase_options.dart';
+import 'package:campus_market/repositories/chat_sessions_repo.dart';
 import 'package:campus_market/repositories/products_repo.dart';
 import 'package:campus_market/repositories/user_repo.dart';
 import 'package:campus_market/screens/wrapper.dart';
@@ -24,6 +25,9 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<ProductsRepo>(
           create: (context) => ProductsRepo(),
+        ),
+        Provider<ChatSessionsRepo>(
+          create: (context) => ChatSessionsRepo(),
         ),
         Provider<UserRepo>.value(
           value: _userRepo,
