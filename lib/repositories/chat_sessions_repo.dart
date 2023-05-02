@@ -15,7 +15,7 @@ class ChatSessionsRepo {
   }
 
   Future<bool> updateChatSession(ChatSession session) {
-    return db.updateDocument(_getChatSessionCollectionPath(session.productId) + session.id!, session.toJson());
+    return db.updateDocument(_getChatSessionCollectionPath(session.productId) + "/" + session.id!, session.toJson());
   }
 
   Future<void> addChatMessage(ChatModel message, String sessionId) {
@@ -27,24 +27,21 @@ class ChatSessionsRepo {
 
   Future<Stream<ChatSession>> streamChat(Product product, String buyerId) async {
     return db
-        .getCollectionReference(kCollectionPath)
-        .where("productId", isEqualTo: product.id!)
+        .getCollectionReference(_getChatSessionCollectionPath(product.id!))
         .where("senderId", isEqualTo: buyerId)
         .limit(1)
         .get()
-        .then((value) {
+        .then((value) async {
       if (value.docs.isEmpty) {
         //create new session
-        db
+        return await db
             .createDocument(_getChatSessionCollectionPath(product.id!), ChatSession.newSession(buyerId, "Ameteku", product).toJson())
             .then((value) {
-          if (value != null) {
-            return db
-                .getCollectionReference(kCollectionPath)
-                .doc(value)
-                .snapshots()
-                .map((event) => ChatSession.fromJson(event.data()!, id: event.id));
-          }
+          return db
+              .getCollectionReference(_getChatSessionCollectionPath(product.id!))
+              .doc(value)
+              .snapshots()
+              .map((event) => ChatSession.fromJson(event.data()!, id: event.id));
         });
       }
       return value.docs.first.reference.snapshots().map((event) => ChatSession.fromJson(event.data()!, id: event.id));

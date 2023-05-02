@@ -21,15 +21,24 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatModel> messages = [];
 
   late UserRepo _userRepo;
+  late Future chatFuture;
+
+  @override
+  void initState() {
+    _userRepo = context.read<UserRepo>();
+
+    chatFuture = ChatSessionsRepo().streamChat(widget.product, _userRepo.firestoreUserStream.value!.uid!);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _userRepo = context.read<UserRepo>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Message'),
       ),
       body: FutureBuilder(
-          future: ChatSessionsRepo().streamChat(widget.product, _userRepo.firestoreUserStream.value!.uid!),
+          future: chatFuture,
           builder: (context, snap) {
             if (snap.data == null) {
               return const SizedBox.shrink();
@@ -37,6 +46,7 @@ class _ChatPageState extends State<ChatPage> {
             return StreamBuilder<ChatSession>(
                 stream: snap.data,
                 builder: (context, snapshot) {
+                  print("Data is  ${snapshot.data}");
                   return Column(
                     children: [
                       Expanded(
@@ -45,7 +55,7 @@ class _ChatPageState extends State<ChatPage> {
                         reverse: true,
                         order: GroupedListOrder.DESC,
                         floatingHeader: true,
-                        elements: messages,
+                        elements: snapshot.data?.messages ?? [],
                         groupBy: (message) => DateTime(
                           message.date.year,
                           message.date.month,
@@ -90,7 +100,17 @@ class _ChatPageState extends State<ChatPage> {
                                 userSentId: _userRepo.firestoreUserStream.value!.uid!,
                               );
 
-                              setState(() => messages.add(message));
+                              final reply = ChatModel(
+                                text: "Sorry it is sold",
+                                date: DateTime.now(),
+                                productId: widget.product.id!,
+                                userSentId: widget.product.ownerId,
+                              );
+
+                              snapshot.data!.messages.add(message);
+                              snapshot.data!.messages.add(reply);
+
+                              ChatSessionsRepo().updateChatSession(snapshot.data!);
                             },
                           )),
                     ],
